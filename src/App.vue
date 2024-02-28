@@ -2,9 +2,12 @@
   <HeaderApp />
   <div class="container">
     <BalanceApp :total="total" />
-    <IncomeExpenses :income="income" :expenses="expenses" />
-    <TransactionList :transactions="transactions" />
-    <AddTransaction />
+    <IncomeExpenses :income="+income" :expenses="+expenses" />
+    <TransactionList
+      @deleteTrans="deleteTransaction"
+      :transactions="transactions"
+    />
+    <AddTransaction @transactionSubmited="handleSubmit" />
   </div>
 </template>
 
@@ -16,6 +19,8 @@ import TransactionList from "./components/TransactionList.vue";
 import AddTransaction from "./components/AddTransaction.vue";
 
 import { ref, computed } from "vue";
+import { useToast } from "vue-toastification";
+const toast = useToast();
 const transactions = ref([
   { id: 1, text: "Flower", amount: -19.99 },
   { id: 2, text: "Salary", amount: 299.97 },
@@ -43,4 +48,16 @@ const expenses = computed(() => {
     .reduce((acc, transaction) => acc + transaction.amount, 0)
     .toFixed(2);
 });
+const deleteTransaction = (id) => {
+  transactions.value = transactions.value.filter((tra) => tra.id != id);
+  toast.success("Transaction delted succefully");
+};
+const handleSubmit = (transactionData) => {
+  transactions.value.push({
+    id: Math.floor(Math.random() * 1000),
+    text: transactionData.text,
+    amount: transactionData.amount,
+  });
+  toast.success("Transaction added succesfully");
+};
 </script>
